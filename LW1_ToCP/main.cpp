@@ -13,26 +13,31 @@ int main()
 	int c_rib=0;
 	int count = 0;
 	std::string* str;
-	Work* cl_w;
+	Work* st_w;
 	//Читаем файл
 	file_read(str, c_rib);
 
-	cl_w = new Work[c_rib];
+	st_w = new Work[c_rib];
 	//Разбиваем строку, заносим в объект
 	for (int i = 0; i < c_rib; i++){
 		int j = 0;
-		cl_w[i].prev = str_frag(str[i], j);
+		st_w[i].prev = str_frag(str[i], j);
 		j++;
-		cl_w[i].std_time = std::stoi(str_frag(str[i], j));
+		st_w[i].std_time = std::stoi(str_frag(str[i], j));
 		j++;
-		cl_w[i].min_time = std::stoi(str_frag(str[i], j));
+		st_w[i].min_time = std::stoi(str_frag(str[i], j));
 		j++;
-		cl_w[i].std_cost = std::stoi(str_frag(str[i], j));
+		st_w[i].std_cost = std::stoi(str_frag(str[i], j));
 		j++;
-		cl_w[i].min_cost = std::stoi(str_frag(str[i], j));
+		st_w[i].min_cost = std::stoi(str_frag(str[i], j));
 	}
-
+	count = c_rib+1;
 	//Рассчёт кол-ва узлов(подсчёт кол-ва строк без повторений+1(для последней дуги))
+	for (int i = 0; i < c_rib-1; i++) {
+		for (int j = i+1; j < c_rib; j++)
+			if (st_w[i].prev == st_w[j].prev)
+				count--;
+	}
 	//MSize = count + 2;
 	//Создание самой сети(заполнение матрицы)
 	//Оптимизация сети
