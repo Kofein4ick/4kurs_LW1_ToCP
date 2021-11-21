@@ -38,7 +38,7 @@ int main()
 			if (st_w[i].prev == st_w[j].prev)
 				count--;
 	}
-	//MSize = count + 2;
+	MSize = count;
 	//Создание самой сети(заполнение матрицы)
 	//Оптимизация сети
 	//График Ганта
