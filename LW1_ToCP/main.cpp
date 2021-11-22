@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "Structures.h"
 
 std::string str_frag(std::string str, int& pos);
@@ -19,7 +20,7 @@ int main()
 	//Читаем файл
 	file_read(str, c_rib);
 	arcs = new Arc[c_rib];
-	//Разбиваем строку, заносим в объект
+	//Разбиваем строку, заносим в структуру
 	for (int i = 0; i < c_rib; i++){
 		int j = 0;
 		std::string temp2;
@@ -127,7 +128,28 @@ int main()
 		std::cout << "arc: " << i << "\t";
 		std::cout << arcs[i].end_point << "\n";
 	}
+
+
 	//Оптимизация сети
+	points[0].time_early = 0;
+	for (int i = 1; i < MSize; i++) {
+		std::vector<int> temp;
+		for (int j = 0; j < points[i].end_of_arc.size(); j++) {
+			if (arcs[points[i].end_of_arc[j]].end_point == i) {
+					temp.push_back(points[arcs[points[i].end_of_arc[j]].start_point].time_early + arcs[points[i].end_of_arc[j]].min_time);
+			}
+		}
+		if(points[i].end_of_arc.size()==1)
+			points[i].time_early = temp.back();
+		else
+			points[i].time_early = std::max(temp[0], temp[1]);
+	}
+	std::cout << "points[i].time_early:\n";
+	for (int i = 0; i < MSize; i++) {
+		std::cout << "point: " << i << "\t";
+		std::cout << points[i].time_early << " ";
+		std::cout << "\n";
+	}
 	//График Ганта
 	system("pause");
 	return 0;
