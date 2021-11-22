@@ -7,8 +7,8 @@ struct Arc {
 	int min_time=0;
 	int std_cost=0;
 	int min_cost=0;
-	int start_point = 0;
-	int end_point = 0;
+	int start_point = -1;
+	int end_point = -1;
 };
 
 struct Point {

@@ -58,7 +58,7 @@ int main()
 	points = new Point [MSize];
 	count = 0; int k = 0;
 	//Определение начальной вершины каждой дуги
-	for (int i = 0; i < c_rib - 1; i++) {
+	for (int i = 0; i < c_rib; i++) {
 		if (k == MSize)
 			break;
 
@@ -78,10 +78,55 @@ int main()
 				points[k].start_of_arc.push_back(j);
 				arcs[j].start_point = k;
 			}
-		//count = 0;
+		count = 0;
 		k++;
 	}
+	std::cout << "start_of_arc:\n";
+	for (int i = 0; i < MSize; i++) {
+		std::cout << "point: "<<i<<"\t";
+		for (int j = 0; j < points[i].start_of_arc.size(); j++)
+			std::cout << points[i].start_of_arc[j]<<" ";
+		std::cout << "\n";
+	}
 	//Определение конечной вершины у каждой дуги
+	for (int i = c_rib - 1; i >= 0; i--) {
+		if (arcs[i].prev.size() != 0) {
+			for (int j = 0; j < arcs[i].prev.size(); j++) {
+				bool flag = false;
+				arcs[arcs[i].prev[j]].end_point = arcs[i].start_point;
+				for (int k = 0; k < points[arcs[i].start_point].end_of_arc.size(); k++)
+					if (arcs[i].prev[j] == points[arcs[i].start_point].end_of_arc[k])
+						flag = true;
+				if (!flag)
+					points[arcs[i].start_point].end_of_arc.push_back(arcs[i].prev[j]);
+			}
+		}
+	}
+	for (int i = 0; i < c_rib; i++) {
+		if (arcs[i].end_point == -1) {
+			arcs[i].end_point = MSize - 1;
+			points[MSize - 1].end_of_arc.push_back(i);
+		}
+	}
+
+
+	std::cout << "end_of_arc:\n";
+	for (int i = 0; i < MSize; i++) {
+		std::cout << "point: " << i << "\t";
+		for (int j = 0; j < points[i].end_of_arc.size(); j++)
+			std::cout << points[i].end_of_arc[j] << " ";
+		std::cout << "\n";
+	}
+	std::cout << "start_point:\n";
+	for (int i = 0; i < c_rib; i++) {
+		std::cout << "arc: " << i << "\t";
+		std::cout << arcs[i].start_point << "\n";
+	}
+	std::cout << "end_point:\n";
+	for (int i = 0; i < c_rib; i++) {
+		std::cout << "arc: " << i << "\t";
+		std::cout << arcs[i].end_point << "\n";
+	}
 	//Оптимизация сети
 	//График Ганта
 	system("pause");
