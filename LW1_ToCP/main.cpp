@@ -131,13 +131,12 @@ int main()
 
 
 	//Оптимизация сети
+	//Раньше срока
 	points[0].time_early = 0;
 	for (int i = 1; i < MSize; i++) {
 		std::vector<int> temp;
 		for (int j = 0; j < points[i].end_of_arc.size(); j++) {
-			if (arcs[points[i].end_of_arc[j]].end_point == i) {
-					temp.push_back(points[arcs[points[i].end_of_arc[j]].start_point].time_early + arcs[points[i].end_of_arc[j]].min_time);
-			}
+			temp.push_back(points[arcs[points[i].end_of_arc[j]].start_point].time_early + arcs[points[i].end_of_arc[j]].min_time);
 		}
 		if(points[i].end_of_arc.size()==1)
 			points[i].time_early = temp.back();
@@ -150,6 +149,30 @@ int main()
 		std::cout << points[i].time_early << " ";
 		std::cout << "\n";
 	}
+	//Позже срока
+	points[MSize-1].time_late = points[MSize-1].time_early;
+	for (int i = MSize-2; i >=0; i--) {
+		std::vector<int> temp;
+		for (int j = 0; j < points[i].start_of_arc.size(); j++) {
+			temp.push_back(points[arcs[points[i].start_of_arc[j]].end_point].time_late - arcs[points[i].start_of_arc[j]].min_time);
+		}
+		if (points[i].start_of_arc.size() == 1)
+			points[i].time_late = temp.back();
+		else
+			points[i].time_late = std::min(temp[0], temp[1]);
+	}
+	std::cout << "points[i].time_late:\n";
+	for (int i = 0; i < MSize; i++) {
+		std::cout << "point: " << i << "\t";
+		std::cout << points[i].time_late << " ";
+		std::cout << "\n";
+	}
+	//Резерв
+	for (int i = 0; i < MSize; i++)
+		points[i].reserve = points[i].time_late - points[i].time_early;
+
+
+
 	//График Ганта
 	system("pause");
 	return 0;
