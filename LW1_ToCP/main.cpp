@@ -78,7 +78,7 @@ int main()
 				points[k].start_of_arc.push_back(j);
 				arcs[j].start_point = k;
 			}
-		count = 0;
+		//count = 0;
 		k++;
 	}
 	//Определение конечной вершины у каждой дуги
