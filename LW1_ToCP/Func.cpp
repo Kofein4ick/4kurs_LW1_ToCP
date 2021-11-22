@@ -230,7 +230,7 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 				Not_in_CP[j + 1] = temp;
 			}
 	}
-	std::cout << "Works outside the critical path\n";
+	std::cout << "Works beyond the critical path\n";
 	for (int i = 0; i < Not_in_CP.size(); i++) {
 		std::cout << Not_in_CP[i] << " ";
 	}
