@@ -41,7 +41,6 @@ int main()
 		cost = arcs[Crit_Path_Arcs[i]].min_cost + cost;
 	std::cout << "\nDuration of work:" << duration << "\n";
 	std::cout << "Final cost " << cost << "\n";
-	//График Ганта
 	system("pause");
 	return 0;
 }

@@ -265,6 +265,7 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		temp_duration = 0;
 		//Replacing the minimum time with the usual
 		copy_arcs[Not_in_CP.back()].min_time = copy_arcs[Not_in_CP.back()].std_time;
+		copy_arcs[Not_in_CP.back()].min_cost = copy_arcs[Not_in_CP.back()].std_cost;
 		critical_path(copy_arcs, copy_points, Temp_Crit_Path_Points, Temp_Crit_Path_Arcs, MSize, temp_duration);
 
 		std::cout << "\nCritical path: ";
@@ -274,14 +275,15 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		std::cout << "\n";
 		std::cout << "Duration of work:" << temp_duration << "\n";
 		cost = 0;
-		for (int i = 0; i < Crit_Path_Arcs.size(); i++)
-			cost = arcs[Crit_Path_Arcs[i]].min_cost + cost;
+		for (int i = 0; i < Temp_Crit_Path_Arcs.size(); i++)
+			cost = copy_arcs[Temp_Crit_Path_Arcs[i]].min_cost + cost;
 		std::cout << "Cost:" << cost << "\n";
 
 		//Duration check
 		if (temp_duration != duration) {
 			std::cout << "The time of the " << Not_in_CP.back() << " work cannnot be increased\n";
 			copy_arcs[Not_in_CP.back()].min_time = arcs[Not_in_CP.back()].min_time;
+			copy_arcs[Not_in_CP.back()].min_cost = arcs[Not_in_CP.back()].min_cost;
 			Not_in_CP.pop_back();
 		}
 		else {
