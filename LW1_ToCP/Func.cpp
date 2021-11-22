@@ -5,6 +5,16 @@
 #include <algorithm>
 #include "Func.h"
 
+std::string str_frag(std::string str, int& pos) {
+	std::string temp;
+	while ((str[pos] != '\t') && (str[pos] != '\0')) {
+		temp = temp + str[pos];
+		pos++;
+	}
+	return(temp);
+}
+
+
 int file_read(std::string*& str, int& c_rib) {
 	std::ifstream file;
 

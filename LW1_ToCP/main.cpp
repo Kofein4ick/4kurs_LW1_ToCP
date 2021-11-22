@@ -45,13 +45,3 @@ int main()
 	system("pause");
 	return 0;
 }
-
-
-std::string str_frag(std::string str, int& pos) {
-	std::string temp;
-	while ((str[pos] != '\t')&&(str[pos] != '\0')) {
-		temp = temp + str[pos];
-		pos++;
-	}
-	return(temp);
-}
