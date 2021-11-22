@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "Func.h"
 
+//String fragmentation function
 std::string str_frag(std::string str, int& pos) {
 	std::string temp;
 	while ((str[pos] != '\t') && (str[pos] != '\0')) {
@@ -14,11 +15,11 @@ std::string str_frag(std::string str, int& pos) {
 	return(temp);
 }
 
-
+//Input file read function
 int file_read(std::string*& str, int& c_rib) {
 	std::ifstream file;
 
-	file.open("Text.txt");
+	file.open("Text.txt");							//Input file
 	if (!file.is_open()) {
 		std::cout << "Error! Can't open file\n";
 		system("pause");
@@ -42,7 +43,7 @@ int file_read(std::string*& str, int& c_rib) {
 	return 0;
 }
 
-
+//Function for getting arcs from a string
 void filling_the_structure(int c_rib, Arc*& arcs, std::string*& str) {
 	for (int i = 0; i < c_rib; i++) {
 		int j = 0;
@@ -72,11 +73,10 @@ void filling_the_structure(int c_rib, Arc*& arcs, std::string*& str) {
 	}
 }
 
-
+//Graph creation function
 void graph_building(Arc*& arcs, Point*& points, int MSize, int c_rib) {
-	int k = 0;
-	int count = 0;
-	//Определение начальной вершины каждой дуги
+	int k = 0;										//Counter for points array
+	//Determining the starting point of each arc
 	for (int i = 0; i < c_rib; i++) {
 		if (k == MSize)
 			break;
@@ -85,23 +85,22 @@ void graph_building(Arc*& arcs, Point*& points, int MSize, int c_rib) {
 		for (int b = 0; b < k; b++)
 			for (int q = 0; q < points[b].start_of_arc.size(); q++)
 				if (i == points[b].start_of_arc[q])
-					flag2 = true;
+					flag2 = true;					//If the point is processed
 		if (flag2)
 			continue;
 
 		points[k].start_of_arc.push_back(i);
 		arcs[i].start_point = k;
 		for (int j = i + 1; j < c_rib; j++)
+			//If the arcs have the same predecessors
 			if (arcs[i].prev == arcs[j].prev) {
-				count++;
 				points[k].start_of_arc.push_back(j);
 				arcs[j].start_point = k;
 			}
-		count = 0;
 		k++;
 	}
 
-	//Определение конечной вершины у каждой дуги
+	//Determination of the final vertex for each arc
 	for (int i = c_rib - 1; i >= 0; i--) {
 		if (arcs[i].prev.size() != 0) {
 			for (int j = 0; j < arcs[i].prev.size(); j++) {
@@ -121,11 +120,24 @@ void graph_building(Arc*& arcs, Point*& points, int MSize, int c_rib) {
 			points[MSize - 1].end_of_arc.push_back(i);
 		}
 	}
+
+	std::cout << "Graph:\n";
+	std::cout << "Points array:\n";
+	std::cout << "{ ";
+	for (int i = 0; i < MSize; i++)
+		std::cout << i << " ";
+	std::cout << "}\n";
+
+	std::cout << "Arcs array:\n";
+	std::cout << "{ ";
+	for (int i = 0; i < c_rib; i++)
+		std::cout << "[" << arcs[i].start_point << "," << arcs[i].end_point << "] ";
+	std::cout << "}\n\n";
 }
 
-
+//Critical path search function
 void critical_path(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points, std::vector<int>& Crit_Path_Arcs, int MSize, int& duration) {
-	//Раньше срока
+	//Early event execution time
 	points[0].time_early = 0;
 	for (int i = 1; i < MSize; i++) {
 		std::vector<int> temp;
@@ -138,7 +150,7 @@ void critical_path(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Point
 			points[i].time_early = std::max(temp[0], temp[1]);
 	}
 
-	//Позже срока
+	//Late event execution time
 	points[MSize - 1].time_late = points[MSize - 1].time_early;
 	for (int i = MSize - 2; i >= 0; i--) {
 		std::vector<int> temp;
@@ -151,19 +163,18 @@ void critical_path(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Point
 			points[i].time_late = std::min(temp[0], temp[1]);
 	}
 
-	//Резерв
+	//Time reserve and Critical path by points
 	for (int i = 0; i < MSize; i++) {
 		points[i].reserve = points[i].time_late - points[i].time_early;
 		if (points[i].reserve == 0)
 			Crit_Path_Points.push_back(i);
 	}
-
+	////Critical path by arcs
 	for (int i = 0; i < Crit_Path_Points.size() - 1; i++) {
 		for (int j = 0; j < points[Crit_Path_Points[i]].start_of_arc.size(); j++) {
 			for (int q = i + 1; q < Crit_Path_Points.size(); q++) {
 				if (arcs[points[Crit_Path_Points[i]].start_of_arc[j]].end_point == Crit_Path_Points[q]) {
 					Crit_Path_Arcs.push_back(points[Crit_Path_Points[i]].start_of_arc[j]);
-					//duration = duration + arcs[points[Crit_Path_Points[i]].start_of_arc[j]].min_time;
 				}
 			}
 		}
@@ -171,7 +182,7 @@ void critical_path(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Point
 	duration = points[Crit_Path_Points.back()].time_early;
 }
 
-
+//Graph optimization function
 void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points, std::vector<int>& Crit_Path_Arcs, int MSize, int& duration, int c_rib) {
 	std::vector<int> Not_in_CP;
 	int cost;
@@ -187,6 +198,8 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 	for (int i = 0; i < Crit_Path_Arcs.size(); i++)
 		cost = arcs[Crit_Path_Arcs[i]].min_cost + cost;
 	std::cout << "Cost:" << cost << "\n";
+
+	//Looking for arcs outside the critical path
 	for (int i = 0; i < c_rib; i++) {
 		bool flag = false;
 		for (int j = 0; j < Crit_Path_Arcs.size(); j++) {
@@ -200,10 +213,12 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		else
 			Not_in_CP.push_back(i);
 	}
-	std::vector<int> def;
+
+	std::vector<int> def;				//Array of cost differences
 	for (int i = 0; i < Not_in_CP.size(); i++)
 		def.push_back(arcs[Not_in_CP[i]].min_cost - arcs[Not_in_CP[i]].std_cost);
 
+	//Bubble sort
 	for (int i = 0; i < def.size() - 1; i++) {
 		for (int j = 0; j < def.size() - 1; j++)
 			if (def[j] > def[j + 1]) {
@@ -220,6 +235,8 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		std::cout << Not_in_CP[i] << " ";
 	}
 	std::cout << "\n";
+
+	//Making copies of arcs array and points array
 	Arc* copy_arcs = new Arc[c_rib];
 	Point* copy_points = new Point[MSize];
 	for (int i = 0; i < c_rib; i++) {
@@ -235,6 +252,7 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		copy_points[i].start_of_arc = points[i].start_of_arc;
 		copy_points[i].end_of_arc = points[i].end_of_arc;
 	}
+
 	std::cout << "\n*****************Optimization*****************\n";
 	while (Not_in_CP.size() != 0) {
 		std::vector<int> Temp_Crit_Path_Points;
@@ -245,8 +263,10 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 			copy_points[i].reserve = -1;
 		}
 		temp_duration = 0;
+		//Replacing the minimum time with the usual
 		copy_arcs[Not_in_CP.back()].min_time = copy_arcs[Not_in_CP.back()].std_time;
 		critical_path(copy_arcs, copy_points, Temp_Crit_Path_Points, Temp_Crit_Path_Arcs, MSize, temp_duration);
+
 		std::cout << "\nCritical path: ";
 		for (int i = 0; i < Temp_Crit_Path_Arcs.size(); i++) {
 			std::cout << Temp_Crit_Path_Arcs[i] << " ";
@@ -257,6 +277,8 @@ void optimization(Arc*& arcs, Point*& points, std::vector<int>& Crit_Path_Points
 		for (int i = 0; i < Crit_Path_Arcs.size(); i++)
 			cost = arcs[Crit_Path_Arcs[i]].min_cost + cost;
 		std::cout << "Cost:" << cost << "\n";
+
+		//Duration check
 		if (temp_duration != duration) {
 			std::cout << "The time of the " << Not_in_CP.back() << " work cannnot be increased\n";
 			copy_arcs[Not_in_CP.back()].min_time = arcs[Not_in_CP.back()].min_time;

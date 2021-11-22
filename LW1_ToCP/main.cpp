@@ -1,40 +1,40 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Structures.h"
 #include "Func.h"
 
 
 int main()
 {
-	unsigned int MSize = 0;
-	std::vector<int> Crit_Path_Points;
-	std::vector<int> Crit_Path_Arcs;
-	int duration = 0;
-	int c_rib = 0;
-	int cost = 0;
-	std::string* str;
-	Arc* arcs;
-	Point* points;
-	//Читаем файл
+	unsigned int MSize = 0;									//Number of points
+	std::vector<int> Crit_Path_Points;						//Critical path by points
+	std::vector<int> Crit_Path_Arcs;						//Critical path by arcs
+	int duration = 0;										//Project duration
+	int c_rib = 0;											//Number of arcs
+	int cost = 0;											//Project cost
+	std::string* str;										//String for input
+	Arc* arcs;												//Arcs array
+	Point* points;											//Points array
+	//Reading the input file
 	file_read(str, c_rib);
 	arcs = new Arc[c_rib];
 
-	//Разбиваем строку, заносим в структуру
+	//Getting arcs from a string
 	filling_the_structure(c_rib, arcs, str);
 	MSize = c_rib + 1;
 	delete[] str;
 
-	//Рассчёт кол-ва узлов(подсчёт кол-ва строк без повторений+1(для последней дуги))
+	//Getting points from arcs
 	for (int i = 0; i < c_rib - 1; i++) {
 		for (int j = i + 1; j < c_rib; j++)
 			if (arcs[i].prev == arcs[j].prev)
 				MSize--;
 	}
 	points = new Point[MSize];
+	//Graph creation
 	graph_building(arcs, points, MSize, c_rib);
 
-	//Оптимизация сети
+	//Graph optimization
 	optimization(arcs, points, Crit_Path_Points, Crit_Path_Arcs, MSize, duration, c_rib);
 	cost = 0;
 	for (int i = 0; i < Crit_Path_Arcs.size(); i++)
